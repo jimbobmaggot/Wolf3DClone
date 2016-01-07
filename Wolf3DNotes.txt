@@ -2,3 +2,5 @@ Ways to improve existing 3D Engine
 
 Some way to insert game into engine
 Better scratch pad support
+Better textures (reading, blitting, image processing)
+Some way to separate game and engine data

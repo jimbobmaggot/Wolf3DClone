@@ -3,9 +3,20 @@ package com.base.engine;
 public class Game
 {
 
+    Bitmap level;
+    
     public Game()
     {
-
+        level = new Bitmap("level1.png");
+        
+        for(int i = 0; i < level.getWidth(); i++)
+        {
+            for(int j = 0; j < level.getHeight(); j++)
+            {
+                System.out.print(level.getPixel(i, j));
+            }
+            System.out.println();
+        }
     }
 
     public void input()
