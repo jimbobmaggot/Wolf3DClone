@@ -7,7 +7,13 @@ Some way to separate game and engine data
 Add higher level rendering constructs (shaders, materials, meshes, transforms)
 Add some form of automatic shader selection 
 Add some form of primitive shapes (rectangles, spheres, triangles)
-More flexible transform class
+More flexible transform class (default values for projection and camera)
 Non perspective views (orthogonal)
 Rendering Engine
 Texture manipulation (Translation, rotation, scale
+More Control over textures( filtering, formatting)
+More friendly constructors
+window should have more properties(center position, full screen, mouse locking)
+Better vector math (normalization, +=, commonly used vector constants)
+Option class/system
+Centralized "level" or "scene" class that holds data game is using
