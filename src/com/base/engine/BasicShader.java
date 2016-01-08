@@ -26,7 +26,7 @@ public class BasicShader extends Shader
     }
     
     @Override
-    public void updateuniforms(Matrix4f worldMatrix, Matrix4f projectedMatrix, Material material)
+    public void updateUniforms(Matrix4f worldMatrix, Matrix4f projectedMatrix, Material material)
     {
         if(material.getTexture() != null)
         {

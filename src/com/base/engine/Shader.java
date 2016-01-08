@@ -31,7 +31,7 @@ public class Shader
         glUseProgram(program);
     }
     
-    public void updateuniforms(Matrix4f worldMatrix, Matrix4f projectedMatrix, Material material)
+    public void updateUniforms(Matrix4f worldMatrix, Matrix4f projectedMatrix, Material material)
     {
         
     }
