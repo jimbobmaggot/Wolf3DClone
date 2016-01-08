@@ -36,7 +36,7 @@ public class Texture
         
         try
         {
-            int id = TextureLoader.getTexture(ext, new FileInputStream(new File("./res/textures/" + fileName))).getTextureID();
+            int id = TextureLoader.getTexture(ext, new FileInputStream(new File("./res/textures/" + fileName)), GL_NEAREST).getTextureID();
             
             return id;
         }

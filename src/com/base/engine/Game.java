@@ -14,6 +14,9 @@ public class Game
     private static final float SPOT_WIDTH = 1;
     private static final float SPOT_LENGTH = 1;
     private static final float SPOT_HEIGHT = 1;
+    
+    private static final int NUM_TEX_EXP = 4;
+    private static final int NUM_TEXTURES = (int)Math.pow(2, NUM_TEX_EXP);
 
     public Game()
     {
@@ -29,7 +32,7 @@ public class Game
 //        }
 
         shader = BasicShader.getInstance();
-        material = new Material(new Texture("test.png"));
+        material = new Material(new Texture("WolfCollection.png"));
         
         ArrayList<Vertex> vertices = new ArrayList<>();
         ArrayList<Integer> indices = new ArrayList<>();
@@ -43,10 +46,14 @@ public class Game
                     continue;
                 }
                 
-                float xHigher = 1;
-                float xLower = 0;
-                float yHigher = 1;
-                float yLower = 0;
+                int texX = ((level.getPixel(i,j) & 0x00FF00) >> 8) / NUM_TEXTURES;
+                int texY = texX % NUM_TEX_EXP;
+                texX /= NUM_TEX_EXP;
+                
+                float xHigher = 1f - (float)texX/(float)NUM_TEX_EXP;
+                float xLower = xHigher - 1f/(float)NUM_TEX_EXP;
+                float yLower = 1f - (float)texY/(float)NUM_TEX_EXP;
+                float yHigher = yLower - 1f/(float)NUM_TEX_EXP;
                 
                 // Generate Floor
                 indices.add(vertices.size() + 2);
@@ -74,6 +81,15 @@ public class Game
                 vertices.add(new Vertex(new Vector3f((i + 1) * SPOT_WIDTH, SPOT_HEIGHT, (j + 1) * SPOT_LENGTH), new Vector2f(xHigher, yHigher)));
                 vertices.add(new Vertex(new Vector3f(i * SPOT_WIDTH, SPOT_HEIGHT, (j + 1) * SPOT_LENGTH), new Vector2f(xLower, yHigher)));
 
+                texX = ((level.getPixel(i,j) & 0xFF0000) >> 16) / NUM_TEXTURES;
+                texY = texX % NUM_TEX_EXP;
+                texX /= NUM_TEX_EXP;
+                
+                xHigher = 1f - (float)texX/(float)NUM_TEX_EXP;
+                xLower = xHigher - 1f/(float)NUM_TEX_EXP;
+                yLower = 1f - (float)texY/(float)NUM_TEX_EXP;
+                yHigher = yLower - 1f/(float)NUM_TEX_EXP;
+                
                 // Generate Walls
                 if ((level.getPixel(i, j - 1) & 0xFFFFFF) == 0)
                 {
