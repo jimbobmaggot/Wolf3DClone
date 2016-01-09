@@ -14,6 +14,7 @@ Texture manipulation (Translation, rotation, scale
 More Control over textures( filtering, formatting)
 More friendly constructors
 window should have more properties(center position, full screen, mouse locking)
-Better vector math (normalization, +=, commonly used vector constants)
+Better vector math (normalization, +=, commonly used vector constants, swizzling support)
 Option class/system
 Centralized "level" or "scene" class that holds data game is using
+

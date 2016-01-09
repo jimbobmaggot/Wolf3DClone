@@ -50,6 +50,57 @@ public class Level
         mesh.draw();
     }
 
+    public Vector3f checkCollision(Vector3f oldPos, Vector3f newPos, float objectWidth, float objectLength)
+    {
+        Vector2f collisionVector = new Vector2f(1, 1);
+        Vector3f movementVector = newPos.sub(oldPos);
+
+        if (movementVector.length() > 0)
+        {
+            Vector2f blockSize = new Vector2f(SPOT_WIDTH, SPOT_LENGTH);
+            Vector2f objectSize = new Vector2f(objectWidth, objectLength);
+
+            Vector2f oldPos2 = new Vector2f(oldPos.getX(), oldPos.getZ());
+            Vector2f newPos2 = new Vector2f(newPos.getX(), newPos.getZ());
+
+            for (int i = 0; i < level.getWidth(); i++)
+            {
+                for (int j = 0; j < level.getWidth(); j++)
+                {
+                    if((level.getPixel(i, j) & 0xFFFFFF) == 0)
+                    {
+                        collisionVector = collisionVector.mul(rectCollide(oldPos2, newPos2, objectSize, blockSize.mul(new Vector2f(i, j)), blockSize));
+                    }
+                }
+            }
+        }
+
+        return new Vector3f(collisionVector.getX(), 0, collisionVector.getY());
+    }
+
+    private Vector2f rectCollide(Vector2f oldPos, Vector2f newPos, Vector2f size1, Vector2f pos2, Vector2f size2)
+    {
+        Vector2f result = new Vector2f(0, 0);
+        
+        if(newPos.getX() + size1.getX() < pos2.getX() ||
+           newPos.getX() - size1.getX() > pos2.getX() + size2.getX() * size2.getX() ||
+           oldPos.getY() + size1.getY() < pos2.getY() ||
+           oldPos.getY() - size1.getY() > pos2.getY() + size2.getY() * size2.getY())
+        {
+            result.setX(1);
+        }
+        
+        if(oldPos.getX() + size1.getX() < pos2.getX() ||
+           oldPos.getX() - size1.getX() > pos2.getX() + size2.getX() * size2.getX() ||
+           newPos.getY() + size1.getY() < pos2.getY() ||
+           newPos.getY() - size1.getY() > pos2.getY() + size2.getY() * size2.getY())
+        {
+            result.setY(1);
+        }
+        
+        return result;
+    }
+
     private void addFace(ArrayList<Integer> indices, int startLocation, boolean direction)
     {
         if (direction)
@@ -88,7 +139,7 @@ public class Level
         return result;
     }
 
-    private void addVertices(ArrayList<Vertex> vertices, int i, int j, float offset, boolean x, boolean y, boolean z,float[] texCoords)
+    private void addVertices(ArrayList<Vertex> vertices, int i, int j, float offset, boolean x, boolean y, boolean z, float[] texCoords)
     {
         if (x && z)
         {
@@ -138,33 +189,33 @@ public class Level
 
                 // Generate Floor
                 addFace(indices, vertices.size(), true);
-                addVertices(vertices, i, j, 0, true, false, true,texCoords);
+                addVertices(vertices, i, j, 0, true, false, true, texCoords);
 
                 // Generate Ceiling
                 addFace(indices, vertices.size(), false);
-                addVertices(vertices, i, j, 1, true, false, true,texCoords);
+                addVertices(vertices, i, j, 1, true, false, true, texCoords);
 
                 // Generate Walls
                 texCoords = calcTexCoords((level.getPixel(i, j) & 0xFF0000) >> 16);
                 if ((level.getPixel(i, j - 1) & 0xFFFFFF) == 0)
                 {
                     addFace(indices, vertices.size(), false);
-                    addVertices(vertices, i, 0, j, true, true, false,texCoords);
+                    addVertices(vertices, i, 0, j, true, true, false, texCoords);
                 }
                 if ((level.getPixel(i, j + 1) & 0xFFFFFF) == 0)
                 {
                     addFace(indices, vertices.size(), true);
-                    addVertices(vertices, i, 0, (j + 1), true, true, false,texCoords);
+                    addVertices(vertices, i, 0, (j + 1), true, true, false, texCoords);
                 }
                 if ((level.getPixel(i - 1, j) & 0xFFFFFF) == 0)
                 {
                     addFace(indices, vertices.size(), true);
-                    addVertices(vertices, 0, j, i, false, true, true,texCoords);
+                    addVertices(vertices, 0, j, i, false, true, true, texCoords);
                 }
                 if ((level.getPixel(i + 1, j) & 0xFFFFFF) == 0)
                 {
                     addFace(indices, vertices.size(), false);
-                    addVertices(vertices, 0, j, (i + 1), false, true, true,texCoords);
+                    addVertices(vertices, 0, j, (i + 1), false, true, true, texCoords);
                 }
             }
             System.out.println();
