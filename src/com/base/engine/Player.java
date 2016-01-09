@@ -1,22 +1,14 @@
 package com.base.engine;
 
-/**
- *
- * @author Stephen Rumpel
- */
 public class Player
 {
 
-    private static final float MOUSE_SENSITIVITY = 0.5f;
-    private static final float MOUSE_SPEED = 6f;
-    private static final float PLAYER_SIZE = 0.2f;
-    private static final Vector3f ZERO_VECTOR = new Vector3f(0, 0, 0);
+    private static final float MOUSE_SENSITIVITY = 0.33f;
+    private static final float MOVE_SPEED = 5f;
+    public static final float PLAYER_SIZE = 0.2f;
+    private static final Vector3f zeroVector = new Vector3f(0, 0, 0);
 
-    public Player()
-    {
-    }
-
-    public Camera camera;
+    private Camera camera;
 
     private boolean mouseLocked = false;
     private Vector2f centerPosition = new Vector2f(Window.getWidth() / 2, Window.getHeight() / 2);
@@ -41,52 +33,50 @@ public class Player
             mouseLocked = true;
         }
 
-        movementVector = ZERO_VECTOR;
+        movementVector = zeroVector;
 
         if (Input.getKey(Input.KEY_W))
         {
-            movementVector = movementVector.add(camera.getForward()); //camera.move(camera.getForward(), movAmt);
+            movementVector = movementVector.add(camera.getForward());//camera.move(camera.getForward(), movAmt);
         }
         if (Input.getKey(Input.KEY_S))
         {
-            movementVector = movementVector.sub(camera.getForward()); //camera.move(camera.getForward(), -movAmt);
+            movementVector = movementVector.sub(camera.getForward());//camera.move(camera.getForward(), -movAmt);
         }
         if (Input.getKey(Input.KEY_A))
         {
-            movementVector = movementVector.add(camera.getLeft()); //camera.move(camera.getLeft(), movAmt);
+            movementVector = movementVector.add(camera.getLeft());//camera.move(camera.getLeft(), movAmt);
         }
         if (Input.getKey(Input.KEY_D))
         {
-            movementVector = movementVector.add(camera.getRight()); //camera.move(camera.getRight(), movAmt);
+            movementVector = movementVector.add(camera.getRight());//camera.move(camera.getRight(), movAmt);
         }
-
         if (mouseLocked)
         {
             Vector2f deltaPos = Input.getMousePosition().sub(centerPosition);
 
             boolean rotY = deltaPos.getX() != 0;
-            boolean rotX = deltaPos.getX() != 0;
+            boolean rotX = deltaPos.getY() != 0;
 
             if (rotY)
             {
-                getCamera().rotateY(deltaPos.getX() * MOUSE_SENSITIVITY);
+                camera.rotateY(deltaPos.getX() * MOUSE_SENSITIVITY);
             }
             if (rotX)
             {
-                getCamera().rotateX(-deltaPos.getY() * MOUSE_SENSITIVITY);
+                camera.rotateX(-deltaPos.getY() * MOUSE_SENSITIVITY);
             }
 
             if (rotY || rotX)
             {
                 Input.setMousePosition(centerPosition);
             }
-
         }
     }
 
     public void update()
     {
-        float movAmt = (float) (MOUSE_SPEED * Time.getDelta());
+        float movAmt = (float) (MOVE_SPEED * Time.getDelta());
 
         movementVector.setY(0);
 
@@ -101,6 +91,7 @@ public class Player
         Vector3f collisionVector = Game.getLevel().checkCollision(oldPos, newPos, PLAYER_SIZE, PLAYER_SIZE);
         movementVector = movementVector.mul(collisionVector);
 
+        //TODO: Make sure movementVector is greater than 0
         camera.move(movementVector, movAmt);
     }
 
@@ -113,5 +104,4 @@ public class Player
     {
         return camera;
     }
-
 }

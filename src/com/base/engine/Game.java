@@ -7,10 +7,10 @@ public class Game
 
     public Game()
     {
-        Player player = new Player(new Vector3f(8, 0.4375f, 7));
+        Player player = new Player(new Vector3f(8, 0.4375f, 8));
         level = new Level("level1.png", "WolfCollection.png", player);
 
-        Transform.setProjection(70, Window.getWidth(), Window.getHeight(), 0.01f, 10000f);
+        Transform.setProjection(70, Window.getWidth(), Window.getHeight(), 0.01f, 1000f);
         Transform.setCamera(player.getCamera());
     }
 
