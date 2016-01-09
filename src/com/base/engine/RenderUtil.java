@@ -45,6 +45,9 @@ public class RenderUtil
         glEnable(GL_CULL_FACE);
         // Render closer objects on top
         glEnable(GL_DEPTH_TEST);
+        // Enables transparency
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         // Prevents Camera from clipping through mesh
         glEnable(GL_DEPTH_CLAMP);
         

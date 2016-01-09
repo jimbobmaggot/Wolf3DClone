@@ -25,3 +25,4 @@ make easier way to generate texture coordinates
 make time based on seconds not nano
 make better way to copy vector
 gie vectors an interpolation method
+transparency support
