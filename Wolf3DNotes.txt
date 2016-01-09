@@ -17,4 +17,11 @@ window should have more properties(center position, full screen, mouse locking)
 Better vector math (normalization, +=, commonly used vector constants, swizzling support)
 Option class/system
 Centralized "level" or "scene" class that holds data game is using
-
+Game object class
+make all positioning name position
+make naming consitant
+make easier way to generate mesh
+make easier way to generate texture coordinates
+make time based on seconds not nano
+make better way to copy vector
+gie vectors an interpolation method

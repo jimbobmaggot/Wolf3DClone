@@ -15,32 +15,60 @@ public class Level
 
     private static final int NUM_TEX_EXP = 4;
     private static final int NUM_TEXTURES = (int) Math.pow(2, NUM_TEX_EXP);
+    private static final float OPEN_DISTANCE = 1.0f;
+    private static final float DOOR_OPEN_MOVEMENT_AMMOUNT = 0.9f;
 
     private Mesh mesh;
     private Bitmap level;
     private Shader shader;
     private Material material;
     private Transform transform;
+    private Player player;
 
-    public Level(String levelName, String textureName)
+    //private Door door;
+    private ArrayList<Door> doors;
+
+    public Level(String levelName, String textureName, Player player)
     {
+        this.player = player;
         level = new Bitmap(levelName).flipY();
         material = new Material(new Texture(textureName));
         transform = new Transform();
-
+        
         shader = BasicShader.getInstance();
-
+        doors = new ArrayList<>();
+        
         generateLevel();
+        Transform tempTransform = new Transform();
+        tempTransform.setTranslation(new Vector3f(10, 0, 10));
+
+        //door = new Door(tempTransform, material);
+        
     }
 
     public void input()
     {
-
+        if(Input.getKeyDown(Input.KEY_E))
+        {
+            for(Door door : doors)
+            {
+                if(door.getTransform().getTranslation().sub(player.getCamera().getPos()).length() < OPEN_DISTANCE)
+                {
+                    door.open();
+                }
+            }
+        }
+        player.input();
     }
 
     public void update()
     {
-
+        //door.update();
+        for (Door door : doors)
+        {
+            door.update();
+        }
+        player.update();
     }
 
     public void render()
@@ -48,6 +76,12 @@ public class Level
         shader.bind();
         shader.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), material);
         mesh.draw();
+        //door.render();
+        for (Door door : doors)
+        {
+            door.render();
+        }
+        player.render();
     }
 
     public Vector3f checkCollision(Vector3f oldPos, Vector3f newPos, float objectWidth, float objectLength)
@@ -67,11 +101,20 @@ public class Level
             {
                 for (int j = 0; j < level.getWidth(); j++)
                 {
-                    if((level.getPixel(i, j) & 0xFFFFFF) == 0)
+                    if ((level.getPixel(i, j) & 0xFFFFFF) == 0)
                     {
                         collisionVector = collisionVector.mul(rectCollide(oldPos2, newPos2, objectSize, blockSize.mul(new Vector2f(i, j)), blockSize));
                     }
                 }
+            }
+            
+            //TODO: Make this take into account doors orientation
+            for (Door door : doors)
+            {
+                Vector2f doorSize = door.getDoorSize();
+                Vector3f doorPos3f = door.getTransform().getTranslation();
+                Vector2f doorPos2f = new Vector2f(doorPos3f.getX(), doorPos3f.getZ());
+                collisionVector = collisionVector.mul(rectCollide(oldPos2, newPos2, objectSize, doorPos2f, doorSize));
             }
         }
 
@@ -81,23 +124,23 @@ public class Level
     private Vector2f rectCollide(Vector2f oldPos, Vector2f newPos, Vector2f size1, Vector2f pos2, Vector2f size2)
     {
         Vector2f result = new Vector2f(0, 0);
-        
-        if(newPos.getX() + size1.getX() < pos2.getX() ||
-           newPos.getX() - size1.getX() > pos2.getX() + size2.getX() * size2.getX() ||
-           oldPos.getY() + size1.getY() < pos2.getY() ||
-           oldPos.getY() - size1.getY() > pos2.getY() + size2.getY() * size2.getY())
+
+        if (newPos.getX() + size1.getX() < pos2.getX()
+                || newPos.getX() - size1.getX() > pos2.getX() + size2.getX() * size2.getX()
+                || oldPos.getY() + size1.getY() < pos2.getY()
+                || oldPos.getY() - size1.getY() > pos2.getY() + size2.getY() * size2.getY())
         {
             result.setX(1);
         }
-        
-        if(oldPos.getX() + size1.getX() < pos2.getX() ||
-           oldPos.getX() - size1.getX() > pos2.getX() + size2.getX() * size2.getX() ||
-           newPos.getY() + size1.getY() < pos2.getY() ||
-           newPos.getY() - size1.getY() > pos2.getY() + size2.getY() * size2.getY())
+
+        if (oldPos.getX() + size1.getX() < pos2.getX()
+                || oldPos.getX() - size1.getX() > pos2.getX() + size2.getX() * size2.getX()
+                || newPos.getY() + size1.getY() < pos2.getY()
+                || newPos.getY() - size1.getY() > pos2.getY() + size2.getY() * size2.getY())
         {
             result.setY(1);
         }
-        
+
         return result;
     }
 
@@ -171,6 +214,45 @@ public class Level
 
     }
 
+    private void addDoor(int x, int y)
+    {
+        Transform doorTransform = new Transform();
+
+        boolean xDoor = (level.getPixel(x, y - 1) & 0xFFFFFF) == 0 && (level.getPixel(x, y + 1) & 0xFFFFFF) == 0;
+        boolean yDoor = (level.getPixel(x - 1, y) & 0xFFFFFF) == 0 && (level.getPixel(x + 1, y) & 0xFFFFFF) == 0;
+
+        if (!(xDoor ^ yDoor))
+        {
+            System.err.println("Level Generation Failed. Invalid Door Placement" + x + ", " + y);
+            new Exception().printStackTrace();
+            System.exit(1);
+        }
+        
+        Vector3f openPosition = null;
+
+        if (yDoor)
+        {
+            doorTransform.setTranslation(x, 0, y + SPOT_LENGTH / 2); //y + spot length / 2
+            openPosition = doorTransform.getTranslation().sub(new Vector3f(DOOR_OPEN_MOVEMENT_AMMOUNT, 0.0f, 0.0f));
+        }
+        if (xDoor)
+        {
+            doorTransform.setTranslation(x + SPOT_WIDTH / 2, 0, y); //x + spot width / 2
+            doorTransform.setRotation(0, 90, 0);
+            openPosition = doorTransform.getTranslation().sub(new Vector3f(0.0f, 0.0f, DOOR_OPEN_MOVEMENT_AMMOUNT));
+        }
+
+        doors.add(new Door(doorTransform, material, openPosition));
+    }
+
+    private void addSpecial(int blueValue, int x, int y)
+    {
+        if (blueValue == 16)
+        {
+            addDoor(x, y);
+        }
+    }
+
     private void generateLevel()
     {
         ArrayList<Vertex> vertices = new ArrayList<>();
@@ -186,6 +268,8 @@ public class Level
                 }
 
                 float[] texCoords = calcTexCoords((level.getPixel(i, j) & 0x00FF00) >> 8);
+
+                addSpecial(level.getPixel(i, j) & 0x0000FF, i, j);
 
                 // Generate Floor
                 addFace(indices, vertices.size(), true);
@@ -228,6 +312,11 @@ public class Level
         indices.toArray(intArray);
 
         mesh = new Mesh(vertArray, Util.toIntArray(intArray));
+    }
+
+    public Shader getShader()
+    {
+        return shader;
     }
 
 }
