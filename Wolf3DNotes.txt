@@ -26,3 +26,6 @@ make time based on seconds not nano
 make better way to copy vector
 gie vectors an interpolation method
 transparency support
+Need Physics Engine
+Sprite support
+Good way to compare vectors

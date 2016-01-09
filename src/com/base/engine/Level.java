@@ -28,7 +28,6 @@ public class Level
 
     //private Door door;
     private Monster monster;
-    
 
     public Level(String levelName, String textureName, Player player)
     {
@@ -36,30 +35,35 @@ public class Level
         level = new Bitmap(levelName).flipY();
         material = new Material(new Texture(textureName));
         transform = new Transform();
-        
+
         shader = BasicShader.getInstance();
         doors = new ArrayList<>();
-        
+
         generateLevel();
         Transform tempTransform = new Transform();
-        tempTransform.setTranslation(new Vector3f(8, 0, 8));
+        tempTransform.setTranslation(new Vector3f(10, 0, 10));
 
         monster = new Monster(tempTransform);
         //door = new Door(tempTransform, material);
-        
+
+    }
+
+    public void openDoors(Vector3f position)
+    {
+        for (Door door : doors)
+        {
+            if (door.getTransform().getTranslation().sub(position).length() < OPEN_DISTANCE)
+            {
+                door.open();
+            }
+        }
     }
 
     public void input()
     {
-        if(Input.getKeyDown(Input.KEY_E))
+        if (Input.getKeyDown(Input.KEY_E))
         {
-            for(Door door : doors)
-            {
-                if(door.getTransform().getTranslation().sub(player.getCamera().getPos()).length() < OPEN_DISTANCE)
-                {
-                    door.open();
-                }
-            }
+            openDoors(player.getCamera().getPos());
         }
         player.input();
     }
@@ -112,7 +116,7 @@ public class Level
                     }
                 }
             }
-            
+
             //TODO: Make this take into account doors orientation
             for (Door door : doors)
             {
@@ -232,7 +236,7 @@ public class Level
             new Exception().printStackTrace();
             System.exit(1);
         }
-        
+
         Vector3f openPosition = null;
 
         if (yDoor)
