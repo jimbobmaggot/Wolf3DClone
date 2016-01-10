@@ -34,7 +34,6 @@ public class Camera
             Input.setCursor(true);
             mouseLocked = false;
         }
-        
         if (Input.getMouseDown(0))
         {
             Input.setMousePosition(centerPosition);
@@ -64,7 +63,7 @@ public class Camera
             Vector2f deltaPos = Input.getMousePosition().sub(centerPosition);
 
             boolean rotY = deltaPos.getX() != 0;
-            boolean rotX = deltaPos.getX() != 0;
+            boolean rotX = deltaPos.getY() != 0;
 
             if (rotY)
             {
@@ -79,7 +78,6 @@ public class Camera
             {
                 Input.setMousePosition(new Vector2f(Window.getWidth() / 2, Window.getHeight() / 2));
             }
-
         }
     }
 
@@ -120,25 +118,25 @@ public class Camera
     {
         return pos;
     }
-    
-    public Vector3f getForward()
-    {
-        return forward;
-    }
-
-    public Vector3f getUp()
-    {
-        return up;
-    }
 
     public void setPos(Vector3f pos)
     {
         this.pos = pos;
     }
 
+    public Vector3f getForward()
+    {
+        return forward;
+    }
+
     public void setForward(Vector3f forward)
     {
         this.forward = forward;
+    }
+
+    public Vector3f getUp()
+    {
+        return up;
     }
 
     public void setUp(Vector3f up)

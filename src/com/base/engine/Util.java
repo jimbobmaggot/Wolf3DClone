@@ -1,5 +1,6 @@
 package com.base.engine;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -17,6 +18,11 @@ public class Util
     public static IntBuffer createIntBuffer(int size)
     {
         return BufferUtils.createIntBuffer(size);
+    }
+
+    public static ByteBuffer createByteBuffer(int size)
+    {
+        return BufferUtils.createByteBuffer(size);
     }
 
     public static IntBuffer createFlippedBuffer(int... values)
@@ -37,10 +43,8 @@ public class Util
             buffer.put(vertices[i].getPos().getX());
             buffer.put(vertices[i].getPos().getY());
             buffer.put(vertices[i].getPos().getZ());
-            
             buffer.put(vertices[i].getTexCoord().getX());
             buffer.put(vertices[i].getTexCoord().getY());
-            
             buffer.put(vertices[i].getNormal().getX());
             buffer.put(vertices[i].getNormal().getY());
             buffer.put(vertices[i].getNormal().getZ());
@@ -70,7 +74,7 @@ public class Util
 
     public static String[] removeEmptyStrings(String[] data)
     {
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<String> result = new ArrayList<String>();
 
         for (int i = 0; i < data.length; i++)
         {

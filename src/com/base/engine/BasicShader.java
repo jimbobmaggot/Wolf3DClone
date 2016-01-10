@@ -1,34 +1,30 @@
 package com.base.engine;
 
-/**
- *
- * @author Stephen Rumpel
- */
 public class BasicShader extends Shader
 {
+
     private static final BasicShader instance = new BasicShader();
-    
+
     public static BasicShader getInstance()
     {
         return instance;
     }
-    
-    public BasicShader()
+
+    private BasicShader()
     {
         super();
-        
-        addVertexShaderFromFile("basicVertex.vs");
-        addFragmentShaderFromFile("basicFragment.fs");
+
+        addVertexShaderFromFile("basicVertex120.vs");
+        addFragmentShaderFromFile("basicFragment120.fs");
         compileShader();
-        
+
         addUniform("transform");
         addUniform("color");
     }
-    
-    @Override
+
     public void updateUniforms(Matrix4f worldMatrix, Matrix4f projectedMatrix, Material material)
     {
-        if(material.getTexture() != null)
+        if (material.getTexture() != null)
         {
             material.getTexture().bind();
         }
@@ -36,7 +32,7 @@ public class BasicShader extends Shader
         {
             RenderUtil.unbindTextures();
         }
-        
+
         setUniform("transform", projectedMatrix);
         setUniform("color", material.getColor());
     }

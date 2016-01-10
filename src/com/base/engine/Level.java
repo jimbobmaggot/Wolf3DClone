@@ -22,36 +22,51 @@ public class Level
     private Player player;
     private ArrayList<Door> doors;
     private ArrayList<Monster> monsters;
+    private ArrayList<Medkit> medkits;
+    private ArrayList<Vector3f> exitPoints;
+
+    private ArrayList<Medkit> medkitsToRemove;
 
     private ArrayList<Vector2f> collisionPosStart;
     private ArrayList<Vector2f> collisionPosEnd;
 
-    //WARNING: TEMP VARIABLE!
-    //private Monster monster;
-    public Level(String levelName, String textureName, Player player)
+    public Player getPlayer()
     {
-        this.player = player;
+        return player;
+    }
+
+    public Level(String levelName, String textureName)
+    {
+        medkitsToRemove = new ArrayList<>();
         level = new Bitmap(levelName).flipY();
         material = new Material(new Texture(textureName));
         transform = new Transform();
 
         shader = BasicShader.getInstance();
 
-        generateLevel();
-        Transform tempTransform = new Transform();
-        tempTransform.setTranslation(new Vector3f(8, 0, 8));
+        exitPoints = new ArrayList<>();
 
-        monsters.add(new Monster(tempTransform));
-        //door = new Door(tempTransform, material);
+        generateLevel();
     }
 
-    public void openDoors(Vector3f position)
+    public void openDoors(Vector3f position, boolean tryExitLevel)
     {
         for (Door door : doors)
         {
             if (door.getTransform().getTranslation().sub(position).length() < OPEN_DISTANCE)
             {
                 door.open();
+            }
+        }
+
+        if (tryExitLevel)
+        {
+            for (Vector3f exitPoint : exitPoints)
+            {
+                if (exitPoint.sub(position).length() < OPEN_DISTANCE)
+                {
+                    Game.loadNextLevel();
+                }
             }
         }
     }
@@ -75,9 +90,19 @@ public class Level
 
         player.update();
 
+        for (Medkit medkit : medkits)
+        {
+            medkit.update();
+        }
+
         for (Monster monster : monsters)
         {
             monster.update();
+        }
+
+        for (Medkit medkit : medkitsToRemove)
+        {
+            medkits.remove(medkit);
         }
     }
 
@@ -91,12 +116,17 @@ public class Level
             door.render();
         }
 
-        player.render();
-
         for (Monster monster : monsters)
         {
             monster.render();
         }
+
+        for (Medkit medkit : medkits)
+        {
+            medkit.render();
+        }
+
+        player.render();
     }
 
     public Vector3f checkCollision(Vector3f oldPos, Vector3f newPos, float objectWidth, float objectLength)
@@ -178,7 +208,6 @@ public class Level
             if (nearestMonsterIntersect != null && (nearestIntersection == null
                     || nearestMonsterIntersect.sub(lineStart).length() < nearestIntersection.sub(lineStart).length()))
             {
-                System.out.println("We've hit the monster!");
                 if (nearestMonster != null)
                 {
                     nearestMonster.damage(player.getDamage());
@@ -381,12 +410,31 @@ public class Level
         {
             addDoor(x, y);
         }
+        if (blueValue == 1)
+        {
+            player = new Player(new Vector3f((x + 0.5f) * SPOT_WIDTH, 0.4375f, (y + 0.5f) * SPOT_LENGTH));
+        }
+        if (blueValue == 128)
+        {
+            Transform monsterTransform = new Transform();
+            monsterTransform.setTranslation(new Vector3f((x + 0.5f) * SPOT_WIDTH, 0, (y + 0.5f) * SPOT_LENGTH));
+            monsters.add(new Monster(monsterTransform));
+        }
+        if (blueValue == 192)
+        {
+            medkits.add(new Medkit(new Vector3f((x + 0.5f) * SPOT_WIDTH, 0, (y + 0.5f) * SPOT_LENGTH)));
+        }
+        if (blueValue == 97)
+        {
+            exitPoints.add(new Vector3f((x + 0.5f) * SPOT_WIDTH, 0, (y + 0.5f) * SPOT_LENGTH));
+        }
     }
 
     private void generateLevel()
     {
         doors = new ArrayList<Door>();
         monsters = new ArrayList<Monster>();
+        medkits = new ArrayList<Medkit>();
         collisionPosStart = new ArrayList<Vector2f>();
         collisionPosEnd = new ArrayList<Vector2f>();
 
@@ -448,35 +496,6 @@ public class Level
             }
         }
 
-        //WARNING: DEBUG CODE!
-//		vertices.clear();
-//		indices.clear();
-//
-//		for(int i = 0; i < collisionPosStart.size(); i++)
-//		{
-//			Vector2f lineStart = collisionPosStart.get(i);
-//			Vector2f lineEnd = collisionPosEnd.get(i);
-//
-//			indices.add(vertices.size() + 0);
-//			indices.add(vertices.size() + 1);
-//			indices.add(vertices.size() + 2);
-//			indices.add(vertices.size() + 0);
-//			indices.add(vertices.size() + 2);
-//			indices.add(vertices.size() + 3);
-//
-//			indices.add(vertices.size() + 2);
-//			indices.add(vertices.size() + 1);
-//			indices.add(vertices.size() + 0);
-//			indices.add(vertices.size() + 3);
-//			indices.add(vertices.size() + 2);
-//			indices.add(vertices.size() + 0);
-//
-//			vertices.add(new Vertex(new Vector3f(lineStart.getX(), 0, lineStart.getY()), new Vector2f(0, 0)));
-//			vertices.add(new Vertex(new Vector3f(lineStart.getX(), 1, lineStart.getY()), new Vector2f(0, 1)));
-//			vertices.add(new Vertex(new Vector3f(lineEnd.getX(), 1, lineEnd.getY()), new Vector2f(1, 1)));
-//			vertices.add(new Vertex(new Vector3f(lineEnd.getX(), 0, lineEnd.getY()), new Vector2f(1, 0)));
-//		}
-        //END DEBUG CODE!
         Vertex[] vertArray = new Vertex[vertices.size()];
         Integer[] intArray = new Integer[indices.size()];
 
@@ -484,6 +503,11 @@ public class Level
         indices.toArray(intArray);
 
         mesh = new Mesh(vertArray, Util.toIntArray(intArray));
+    }
+
+    public void removeMedkit(Medkit medkit)
+    {
+        medkitsToRemove.add(medkit);
     }
 
     public Shader getShader()

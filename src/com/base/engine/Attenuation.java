@@ -1,15 +1,12 @@
 package com.base.engine;
 
-/**
- *
- * @author Stephen Rumpel
- */
-public class Attenuation 
+public class Attenuation
 {
-    public float constant;
-    public float linear;
-    public float exponent;
-    
+
+    private float constant;
+    private float linear;
+    private float exponent;
+
     public Attenuation(float constant, float linear, float exponent)
     {
         this.constant = constant;
@@ -17,11 +14,14 @@ public class Attenuation
         this.exponent = exponent;
     }
 
-    // Getters
-    
     public float getConstant()
     {
         return constant;
+    }
+
+    public void setConstant(float constant)
+    {
+        this.constant = constant;
     }
 
     public float getLinear()
@@ -29,26 +29,18 @@ public class Attenuation
         return linear;
     }
 
-    public float getExponent()
-    {
-        return exponent;
-    }
-
-    // Setters
-    
-    public void setConstant(float constant)
-    {
-        this.constant = constant;
-    }
-
     public void setLinear(float linear)
     {
         this.linear = linear;
+    }
+
+    public float getExponent()
+    {
+        return exponent;
     }
 
     public void setExponent(float exponent)
     {
         this.exponent = exponent;
     }
-
 }

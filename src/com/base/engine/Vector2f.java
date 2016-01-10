@@ -22,11 +22,11 @@ public class Vector2f
         return x * r.getX() + y * r.getY();
     }
 
-    public Vector2f normalize()
+    public Vector2f normalized()
     {
         float length = length();
 
-        return new Vector2f(x /= length, y /= length);
+        return new Vector2f(x / length, y / length);
     }
 
     public Vector2f rotate(float angle)
@@ -38,7 +38,6 @@ public class Vector2f
         return new Vector2f((float) (x * cos - y * sin), (float) (x * sin + y * cos));
     }
 
-    // add
     public Vector2f add(Vector2f r)
     {
         return new Vector2f(x + r.getX(), y + r.getY());
@@ -49,7 +48,6 @@ public class Vector2f
         return new Vector2f(x + r, y + r);
     }
 
-    // subract
     public Vector2f sub(Vector2f r)
     {
         return new Vector2f(x - r.getX(), y - r.getY());
@@ -60,7 +58,6 @@ public class Vector2f
         return new Vector2f(x - r, y - r);
     }
 
-    // multiply
     public Vector2f mul(Vector2f r)
     {
         return new Vector2f(x * r.getX(), y * r.getY());
@@ -71,7 +68,6 @@ public class Vector2f
         return new Vector2f(x * r, y * r);
     }
 
-    // divide
     public Vector2f div(Vector2f r)
     {
         return new Vector2f(x / r.getX(), y / r.getY());
@@ -81,35 +77,30 @@ public class Vector2f
     {
         return new Vector2f(x / r, y / r);
     }
-    
+
     public Vector2f abs()
     {
         return new Vector2f(Math.abs(x), Math.abs(y));
     }
 
-    @Override
     public String toString()
     {
         return "(" + x + " " + y + ")";
     }
-    
-    // Getters
 
     public float getX()
     {
         return x;
     }
-    
-    public float getY()
-    {
-        return y;
-    }
-    
-    // Setters
 
     public void setX(float x)
     {
         this.x = x;
+    }
+
+    public float getY()
+    {
+        return y;
     }
 
     public void setY(float y)

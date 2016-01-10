@@ -2,7 +2,6 @@ package com.base.engine;
 
 public class Door
 {
-    //NOTE: You may need to add top/bottom face depending on how you set these variables
 
     public static final float LENGTH = 1;
     public static final float HEIGHT = 1;

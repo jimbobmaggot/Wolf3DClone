@@ -1,27 +1,26 @@
 package com.base.engine;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.HashMap;
 
 public class Shader
 {
 
-    private final int program;
-    private final HashMap<String, Integer> uniforms;
+    private int program;
+    private HashMap<String, Integer> uniforms;
 
     public Shader()
     {
         program = glCreateProgram();
-        uniforms = new HashMap<>();
+        uniforms = new HashMap<String, Integer>();
 
         if (program == 0)
         {
-            System.err.println("Shader creation failed:"
-                    + "Could not find valid memory location in constructor");
+            System.err.println("Shader creation failed: Could not find valid memory location in constructor");
             System.exit(1);
         }
     }
@@ -30,10 +29,10 @@ public class Shader
     {
         glUseProgram(program);
     }
-    
+
     public void updateUniforms(Matrix4f worldMatrix, Matrix4f projectedMatrix, Material material)
     {
-        
+
     }
 
     public void addUniform(String uniform)
@@ -50,21 +49,6 @@ public class Shader
         uniforms.put(uniform, uniformLocation);
     }
 
-    public void addVertexShader(String text)
-    {
-        addProgram(text, GL_VERTEX_SHADER);
-    }
-
-    public void addGeometryShader(String text)
-    {
-        addProgram(text, GL_GEOMETRY_SHADER);
-    }
-
-    public void addFragmentShader(String text)
-    {
-        addProgram(text, GL_FRAGMENT_SHADER);
-    }
-    
     public void addVertexShaderFromFile(String text)
     {
         addProgram(loadShader(text), GL_VERTEX_SHADER);
@@ -78,6 +62,21 @@ public class Shader
     public void addFragmentShaderFromFile(String text)
     {
         addProgram(loadShader(text), GL_FRAGMENT_SHADER);
+    }
+
+    public void addVertexShader(String text)
+    {
+        addProgram(text, GL_VERTEX_SHADER);
+    }
+
+    public void addGeometryShader(String text)
+    {
+        addProgram(text, GL_GEOMETRY_SHADER);
+    }
+
+    public void addFragmentShader(String text)
+    {
+        addProgram(text, GL_FRAGMENT_SHADER);
     }
 
     public void compileShader()
@@ -105,8 +104,7 @@ public class Shader
 
         if (shader == 0)
         {
-            System.err.println("Shader creation failed:"
-                    + "Could not find valid memory location when adding shader");
+            System.err.println("Shader creation failed: Could not find valid memory location when adding shader");
             System.exit(1);
         }
 
@@ -121,7 +119,7 @@ public class Shader
 
         glAttachShader(program, shader);
     }
-    
+
     private static String loadShader(String fileName)
     {
         StringBuilder shaderSource = new StringBuilder();

@@ -1,14 +1,14 @@
 package com.base.engine;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
 public class RenderUtil
 {
 
     public static void clearScreen()
     {
-        // TODO: Stencil Buffer
+        //TODO: Stencil Buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
@@ -23,7 +23,7 @@ public class RenderUtil
             glDisable(GL_TEXTURE_2D);
         }
     }
-    
+
     public static void unbindTextures()
     {
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -38,19 +38,16 @@ public class RenderUtil
     {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        // Tell gl which face is front and which is back
         glFrontFace(GL_CW);
         glCullFace(GL_BACK);
-        // Tell gl to only render front faces
         glEnable(GL_CULL_FACE);
-        // Render closer objects on top
         glEnable(GL_DEPTH_TEST);
-        // Enables transparency
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        // Prevents Camera from clipping through mesh
+
         glEnable(GL_DEPTH_CLAMP);
-        
+
         glEnable(GL_TEXTURE_2D);
     }
 

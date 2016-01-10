@@ -25,7 +25,7 @@ public class Quaternion
     {
         float length = length();
 
-        return new Quaternion(x /= length, y /= length, z /= length, w /= length);
+        return new Quaternion(x / length, y / length, z / length, w / length);
     }
 
     public Quaternion conjugate()
@@ -52,12 +52,15 @@ public class Quaternion
 
         return new Quaternion(x_, y_, z_, w_);
     }
-    
-    // Getters
 
     public float getX()
     {
         return x;
+    }
+
+    public void setX(float x)
+    {
+        this.x = x;
     }
 
     public float getY()
@@ -65,31 +68,24 @@ public class Quaternion
         return y;
     }
 
-    public float getZ()
-    {
-        return z;
-    }
-
-    public float getW()
-    {
-        return w;
-    }
-    
-    // Setters
-
-    public void setX(float x)
-    {
-        this.x = x;
-    }
-
     public void setY(float y)
     {
         this.y = y;
     }
 
+    public float getZ()
+    {
+        return z;
+    }
+
     public void setZ(float z)
     {
         this.z = z;
+    }
+
+    public float getW()
+    {
+        return w;
     }
 
     public void setW(float w)

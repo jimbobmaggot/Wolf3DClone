@@ -37,7 +37,7 @@ public class Vector3f
     {
         float length = length();
 
-        return new Vector3f(x /= length, y /= length, z /= length);
+        return new Vector3f(x / length, y / length, z / length);
     }
 
     public Vector3f rotate(float angle, Vector3f axis)
@@ -55,14 +55,9 @@ public class Vector3f
 
         Quaternion w = rotation.mul(this).mul(conjugate);
 
-        x = w.getX();
-        y = w.getY();
-        z = w.getZ();
-
-        return this;
+        return new Vector3f(w.getX(), w.getY(), w.getZ());
     }
 
-    // add
     public Vector3f add(Vector3f r)
     {
         return new Vector3f(x + r.getX(), y + r.getY(), z + r.getZ());
@@ -73,7 +68,6 @@ public class Vector3f
         return new Vector3f(x + r, y + r, z + r);
     }
 
-    // subtract
     public Vector3f sub(Vector3f r)
     {
         return new Vector3f(x - r.getX(), y - r.getY(), z - r.getZ());
@@ -84,7 +78,6 @@ public class Vector3f
         return new Vector3f(x - r, y - r, z - r);
     }
 
-    // multiply
     public Vector3f mul(Vector3f r)
     {
         return new Vector3f(x * r.getX(), y * r.getY(), z * r.getZ());
@@ -95,7 +88,6 @@ public class Vector3f
         return new Vector3f(x * r, y * r, z * r);
     }
 
-    // divide
     public Vector3f div(Vector3f r)
     {
         return new Vector3f(x / r.getX(), y / r.getY(), z / r.getZ());
@@ -105,45 +97,40 @@ public class Vector3f
     {
         return new Vector3f(x / r, y / r, z / r);
     }
-    
+
     public Vector3f abs()
     {
         return new Vector3f(Math.abs(x), Math.abs(y), Math.abs(z));
     }
-    
-    @Override
+
     public String toString()
     {
         return "(" + x + " " + y + " " + z + ")";
     }
 
-    // Getters
-
     public float getX()
     {
         return x;
     }
-    
-    public float getY()
-    {
-        return y;
-    }
-
-    public float getZ()
-    {
-        return z;
-    }
-    
-    // Setters
 
     public void setX(float x)
     {
         this.x = x;
     }
 
+    public float getY()
+    {
+        return y;
+    }
+
     public void setY(float y)
     {
         this.y = y;
+    }
+
+    public float getZ()
+    {
+        return z;
     }
 
     public void setZ(float z)

@@ -1,14 +1,11 @@
 package com.base.engine;
 
-/**
- *
- * @author Stephen Rumpel
- */
-public class SpotLight 
+public class SpotLight
 {
-    public PointLight pointLight;
-    public Vector3f direction;
-    public float cutoff;
+
+    private PointLight pointLight;
+    private Vector3f direction;
+    private float cutoff;
 
     public SpotLight(PointLight pointLight, Vector3f direction, float cutoff)
     {
@@ -16,12 +13,15 @@ public class SpotLight
         this.direction = direction.normalized();
         this.cutoff = cutoff;
     }
-    
-    // Getters
 
     public PointLight getPointLight()
     {
         return pointLight;
+    }
+
+    public void setPointLight(PointLight pointLight)
+    {
+        this.pointLight = pointLight;
     }
 
     public Vector3f getDirection()
@@ -29,21 +29,14 @@ public class SpotLight
         return direction;
     }
 
-    public float getCutoff()
-    {
-        return cutoff;
-    }
-
-    // Setters
-    
-    public void setPointLight(PointLight pointLight)
-    {
-        this.pointLight = pointLight;
-    }
-
     public void setDirection(Vector3f direction)
     {
         this.direction = direction.normalized();
+    }
+
+    public float getCutoff()
+    {
+        return cutoff;
     }
 
     public void setCutoff(float cutoff)

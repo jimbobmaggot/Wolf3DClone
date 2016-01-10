@@ -1,16 +1,13 @@
 package com.base.engine;
 
-/**
- *
- * @author Stephen Rumpel
- */
-public class PointLight 
+public class PointLight
 {
+
     private BaseLight baseLight;
     private Attenuation atten;
     private Vector3f position;
     private float range;
-    
+
     public PointLight(BaseLight baseLight, Attenuation atten, Vector3f position, float range)
     {
         this.baseLight = baseLight;
@@ -23,29 +20,15 @@ public class PointLight
     {
         return baseLight;
     }
-    
-    // Getters
+
+    public void setBaseLight(BaseLight baseLight)
+    {
+        this.baseLight = baseLight;
+    }
 
     public Attenuation getAtten()
     {
         return atten;
-    }
-
-    public Vector3f getPosition()
-    {
-        return position;
-    }
-    
-    public float getRange()
-    {
-        return range;
-    }
-
-    // Setters
-    
-    public void setBaseLight(BaseLight baseLight)
-    {
-        this.baseLight = baseLight;
     }
 
     public void setAtten(Attenuation atten)
@@ -53,11 +36,21 @@ public class PointLight
         this.atten = atten;
     }
 
+    public Vector3f getPosition()
+    {
+        return position;
+    }
+
     public void setPosition(Vector3f position)
     {
         this.position = position;
     }
-    
+
+    public float getRange()
+    {
+        return range;
+    }
+
     public void setRange(float range)
     {
         this.range = range;
