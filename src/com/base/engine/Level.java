@@ -65,6 +65,7 @@ public class Level
         if (Input.getKeyDown(Input.KEY_E))
         {
             openDoors(player.getCamera().getPos());
+            monster.damage(30);
         }
 
         player.input();
@@ -146,7 +147,7 @@ public class Level
             Vector2f doorSize = door.getDoorSize();
             Vector3f doorPos3f = door.getTransform().getTranslation();
             Vector2f doorPos2f = new Vector2f(doorPos3f.getX(), doorPos3f.getZ());
-            Vector2f collisionVector = lineIntersect(lineStart, lineEnd, doorPos2f, doorSize);
+            Vector2f collisionVector = lineIntersectRect(lineStart, lineEnd, doorPos2f, doorSize);
 
             nearestIntersection = findNearestVector2f(nearestIntersection, collisionVector, lineStart);
         }
