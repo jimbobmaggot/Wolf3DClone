@@ -34,6 +34,8 @@ public class Monster
     public static final float SHOT_ANGLE = 10.0f;
     public static final float ATTACK_CHANCE = 0.5f;
     public static final int MAX_HEALTH = 100;
+    public static final int DAMAGE_MIN = 5;
+    public static final int DAMAGE_MAX = 30;
 
     private static Mesh mesh;
     private Material material;
@@ -73,17 +75,29 @@ public class Monster
             mesh = new Mesh(vertices, indices);
         }
     }
-    
+
+    public Transform getTransform()
+    {
+        return transform;
+    }
+
+    public Vector2f getSize()
+    {
+        return new Vector2f(MONSTER_WIDTH, MONSTER_LENGTH);
+    }
+
     public void damage(int amt)
     {
-        if(state == STATE_IDLE)
+        if (state == STATE_IDLE)
         {
             state = STATE_CHASE;
         }
-        
+
         health -= amt;
         
-        if(health <= 0)
+        System.out.println("Monster hit");
+
+        if (health <= 0)
         {
             state = STATE_DYING;
         }
@@ -91,7 +105,7 @@ public class Monster
 
     private void idleUpdate(Vector3f orientation, float distance)
     {
-        double time = (double) Time.getTime() / (double) Time.SECOND;
+        double time = ((double) Time.getTime()) / ((double) Time.SECOND);
         double timeDecimals = time - (double) ((int) time);
 
         if (timeDecimals < 0.5)
@@ -104,7 +118,7 @@ public class Monster
             Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ());
             Vector2f lineEnd = lineStart.add(castDirection.mul(SHOOT_DISTANCE));
 
-            Vector2f collisionVector = Game.getLevel().checkIntersections(lineStart, lineEnd);
+            Vector2f collisionVector = Game.getLevel().checkIntersections(lineStart, lineEnd, false);
 
             Vector2f playerIntersectVector = Game.getLevel().lineIntersectRect(lineStart, lineEnd,
                     new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),
@@ -127,6 +141,7 @@ public class Monster
         {
             state = STATE_ATTACK;
         }
+
         if (distance > MOVEMENT_STOP_DISTANCE)
         {
             float moveAmount = MOVE_SPEED * (float) Time.getDelta();
@@ -156,20 +171,20 @@ public class Monster
 
     private void attackUpdate(Vector3f orientation, float distance)
     {
-        double time = (double) Time.getTime() / (double) Time.SECOND;
+        double time = ((double) Time.getTime()) / ((double) Time.SECOND);
         double timeDecimals = time - (double) ((int) time);
 
         if (timeDecimals < 0.5)
         {
             canAttack = true;
         }
-        else if(canAttack)
+        else if (canAttack)
         {
             Vector2f lineStart = new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
             Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((rand.nextFloat() - 0.5f) * SHOT_ANGLE);
             Vector2f lineEnd = lineStart.add(castDirection.mul(SHOOT_DISTANCE));
 
-            Vector2f collisionVector = Game.getLevel().checkIntersections(lineStart, lineEnd);
+            Vector2f collisionVector = Game.getLevel().checkIntersections(lineStart, lineEnd, false);
 
             Vector2f playerIntersectVector = Game.getLevel().lineIntersectRect(lineStart, lineEnd,
                     new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),
@@ -178,31 +193,22 @@ public class Monster
             if (playerIntersectVector != null && (collisionVector == null
                     || playerIntersectVector.sub(lineStart).length() < collisionVector.sub(lineStart).length()))
             {
-                System.out.println("We've just shot the player!");
+                Game.getLevel().damagePlayer(rand.nextInt(DAMAGE_MAX - DAMAGE_MIN) + DAMAGE_MIN);
             }
-
-            if (collisionVector == null)
-            {
-                System.out.println("We've missed everything!");
-            }
-            else
-            {
-                System.out.println("We've hit something!");
-            }
-
-            state = STATE_CHASE;
             canAttack = false;
+            state = STATE_CHASE;
         }
     }
 
     private void dyingUpdate(Vector3f orientation, float distance)
     {
+        System.out.println("Monster Dead!");
         state = STATE_DEAD;
     }
 
     private void deadUpdate(Vector3f orientation, float distance)
     {
-        //System.out.println("Dead");
+        
     }
 
     private void alignWithGround()

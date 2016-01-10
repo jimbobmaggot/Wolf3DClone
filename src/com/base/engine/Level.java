@@ -21,13 +21,13 @@ public class Level
     private Transform transform;
     private Player player;
     private ArrayList<Door> doors;
+    private ArrayList<Monster> monsters;
 
     private ArrayList<Vector2f> collisionPosStart;
     private ArrayList<Vector2f> collisionPosEnd;
 
     //WARNING: TEMP VARIABLE!
-    private Monster monster;
-
+    //private Monster monster;
     public Level(String levelName, String textureName, Player player)
     {
         this.player = player;
@@ -36,17 +36,13 @@ public class Level
         transform = new Transform();
 
         shader = BasicShader.getInstance();
-        doors = new ArrayList<>();
-        collisionPosStart = new ArrayList<>();
-        collisionPosEnd = new ArrayList<>();
 
         generateLevel();
         Transform tempTransform = new Transform();
-        tempTransform.setTranslation(new Vector3f(10, 0, 10));
+        tempTransform.setTranslation(new Vector3f(8, 0, 8));
 
-        monster = new Monster(tempTransform);
+        monsters.add(new Monster(tempTransform));
         //door = new Door(tempTransform, material);
-
     }
 
     public void openDoors(Vector3f position)
@@ -60,14 +56,13 @@ public class Level
         }
     }
 
+    public void damagePlayer(int amt)
+    {
+        player.damage(amt);
+    }
+
     public void input()
     {
-        if (Input.getKeyDown(Input.KEY_E))
-        {
-            openDoors(player.getCamera().getPos());
-            monster.damage(30);
-        }
-
         player.input();
     }
 
@@ -79,7 +74,11 @@ public class Level
         }
 
         player.update();
-        monster.update();
+
+        for (Monster monster : monsters)
+        {
+            monster.update();
+        }
     }
 
     public void render()
@@ -93,7 +92,11 @@ public class Level
         }
 
         player.render();
-        monster.render();
+
+        for (Monster monster : monsters)
+        {
+            monster.render();
+        }
     }
 
     public Vector3f checkCollision(Vector3f oldPos, Vector3f newPos, float objectWidth, float objectLength)
@@ -132,7 +135,7 @@ public class Level
         return new Vector3f(collisionVector.getX(), 0, collisionVector.getY());
     }
 
-    public Vector2f checkIntersections(Vector2f lineStart, Vector2f lineEnd)
+    public Vector2f checkIntersections(Vector2f lineStart, Vector2f lineEnd, boolean hurtMonsters)
     {
         Vector2f nearestIntersection = null;
 
@@ -150,6 +153,37 @@ public class Level
             Vector2f collisionVector = lineIntersectRect(lineStart, lineEnd, doorPos2f, doorSize);
 
             nearestIntersection = findNearestVector2f(nearestIntersection, collisionVector, lineStart);
+        }
+
+        if (hurtMonsters)
+        {
+            Vector2f nearestMonsterIntersect = null;
+            Monster nearestMonster = null;
+
+            for (Monster monster : monsters)
+            {
+                Vector2f monsterSize = monster.getSize();
+                Vector3f monsterPos3f = monster.getTransform().getTranslation();
+                Vector2f monsterPos2f = new Vector2f(monsterPos3f.getX(), monsterPos3f.getZ());
+                Vector2f collisionVector = lineIntersectRect(lineStart, lineEnd, monsterPos2f, monsterSize);
+
+                nearestMonsterIntersect = findNearestVector2f(nearestMonsterIntersect, collisionVector, lineStart);
+
+                if (nearestMonsterIntersect == collisionVector)
+                {
+                    nearestMonster = monster;
+                }
+            }
+
+            if (nearestMonsterIntersect != null && (nearestIntersection == null
+                    || nearestMonsterIntersect.sub(lineStart).length() < nearestIntersection.sub(lineStart).length()))
+            {
+                System.out.println("We've hit the monster!");
+                if (nearestMonster != null)
+                {
+                    nearestMonster.damage(player.getDamage());
+                }
+            }
         }
 
         return nearestIntersection;
@@ -190,6 +224,7 @@ public class Level
         return a.getX() * b.getY() - a.getY() * b.getX();
     }
 
+    //http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
     private Vector2f lineIntersect(Vector2f lineStart1, Vector2f lineEnd1, Vector2f lineStart2, Vector2f lineEnd2)
     {
         Vector2f line1 = lineEnd1.sub(lineStart1);
@@ -350,8 +385,13 @@ public class Level
 
     private void generateLevel()
     {
-        ArrayList<Vertex> vertices = new ArrayList<>();
-        ArrayList<Integer> indices = new ArrayList<>();
+        doors = new ArrayList<Door>();
+        monsters = new ArrayList<Monster>();
+        collisionPosStart = new ArrayList<Vector2f>();
+        collisionPosEnd = new ArrayList<Vector2f>();
+
+        ArrayList<Vertex> vertices = new ArrayList<Vertex>();
+        ArrayList<Integer> indices = new ArrayList<Integer>();
 
         for (int i = 0; i < level.getWidth(); i++)
         {
@@ -408,6 +448,35 @@ public class Level
             }
         }
 
+        //WARNING: DEBUG CODE!
+//		vertices.clear();
+//		indices.clear();
+//
+//		for(int i = 0; i < collisionPosStart.size(); i++)
+//		{
+//			Vector2f lineStart = collisionPosStart.get(i);
+//			Vector2f lineEnd = collisionPosEnd.get(i);
+//
+//			indices.add(vertices.size() + 0);
+//			indices.add(vertices.size() + 1);
+//			indices.add(vertices.size() + 2);
+//			indices.add(vertices.size() + 0);
+//			indices.add(vertices.size() + 2);
+//			indices.add(vertices.size() + 3);
+//
+//			indices.add(vertices.size() + 2);
+//			indices.add(vertices.size() + 1);
+//			indices.add(vertices.size() + 0);
+//			indices.add(vertices.size() + 3);
+//			indices.add(vertices.size() + 2);
+//			indices.add(vertices.size() + 0);
+//
+//			vertices.add(new Vertex(new Vector3f(lineStart.getX(), 0, lineStart.getY()), new Vector2f(0, 0)));
+//			vertices.add(new Vertex(new Vector3f(lineStart.getX(), 1, lineStart.getY()), new Vector2f(0, 1)));
+//			vertices.add(new Vertex(new Vector3f(lineEnd.getX(), 1, lineEnd.getY()), new Vector2f(1, 1)));
+//			vertices.add(new Vertex(new Vector3f(lineEnd.getX(), 0, lineEnd.getY()), new Vector2f(1, 0)));
+//		}
+        //END DEBUG CODE!
         Vertex[] vertArray = new Vertex[vertices.size()];
         Integer[] intArray = new Integer[indices.size()];
 

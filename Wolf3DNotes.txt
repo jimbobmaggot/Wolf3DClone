@@ -30,3 +30,4 @@ Need Physics Engine
 Sprite support
 Good way to compare vectors
 Vector2f cross product
+Some way to display text
